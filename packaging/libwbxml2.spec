@@ -1,12 +1,11 @@
 %define _name libwbxml
 Name: libwbxml2
-Version: 0.10.8
+Version: 0.11.0
 Release: 1
 Summary: Library to parse, encode and handle WBXML documents
 Group: System/Libraries
 License: LGPLv2.1
-Source0: %{_name}-%{version}.tar.gz
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+Source0: %{name}-%{version}.tar.gz
 BuildRequires: expat-devel zlib-devel popt-devel
 BuildRequires: pkgconfig(libxml-2.0)
 BuildRequires: cmake
@@ -18,11 +17,6 @@ is a binary representation of XML, defined by the Wap Forum, and used
 to reduce bandwidth in mobile communications.
 
 
-%files
-%defattr(-,root,root,-)
-%{_bindir}/*
-%{_libdir}/*.so.*
-%doc %{_docdir}/*
 
 %package devel
 Summary: Development files for %{name}
@@ -40,11 +34,11 @@ Requires: %{name} = %{version}-%{release}
 
 
 %prep
-%setup -q -n %{_name}-%{version}
-mkdir build
+%setup -q -n %{name}-%{version}
 
 
 %build
+mkdir build
 cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr ..
 make
@@ -55,9 +49,15 @@ rm -rf %{buildroot}
 make -C build DESTDIR=%{buildroot} install
 
 
-%clean
-rm -rf %{buildroot}
-
 
 %post -p /sbin/ldconfig
+
 %postun -p /sbin/ldconfig
+
+
+
+%files
+%defattr(-,root,root,-)
+%{_bindir}/*
+%{_libdir}/*.so.*
+%doc %{_docdir}/*
