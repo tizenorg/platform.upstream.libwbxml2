@@ -26,6 +26,7 @@ has been defined by the Wap Forum.
 License:        GPL-2.0+
 Summary:        Tools for libwbxml2
 Group:          Base/Tools
+Requires:       pkgconfig(libxml-2.0)
 Requires:       %{name} = %{version}
 
 %description -n wbxml2-tools

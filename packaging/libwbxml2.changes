@@ -1,3 +1,6 @@
+* Mon Feb 11 2013 Anas Nashif <anas.nashif@intel.com> submit/trunk/20130212.033333@60398c2
+- Development package should requires libxml2-devel
+
 * Mon Feb 11 2013 Anas Nashif <anas.nashif@intel.com> upstream/0.11.2@f7126be
 - Require libxml2 for build
 
