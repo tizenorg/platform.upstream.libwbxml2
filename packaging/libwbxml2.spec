@@ -12,6 +12,7 @@ BuildRequires:  pkgconfig(expat)
 BuildRequires:  pkgconfig(pkg-config)
 BuildRequires:  pkgconfig(popt)
 BuildRequires:  pkgconfig(zlib)
+BuildRequires:  pkgconfig(libxml-2.0)
 
 %description
 wbxml2 is a library that includes a WBXML parser and a WBXML compiler.
@@ -24,8 +25,8 @@ has been defined by the Wap Forum.
 %package -n wbxml2-tools
 License:        GPL-2.0+
 Summary:        Tools for libwbxml2
-Group:          Productivity/Other
-Requires:       libwbxml2 = %{version}
+Group:          Base/Tools
+Requires:       %{name} = %{version}
 
 %description -n wbxml2-tools
 wbxml2 is a library that includes a WBXML parser and a WBXML compiler.
@@ -38,7 +39,7 @@ has been defined by the Wap Forum.
 %package devel
 License:        LGPL-2.1+
 Summary:        WBXML parser and compiler library
-Group:          Development/Libraries/C and C++
+Group:          Development/Libraries
 Requires:       glibc-devel
 Requires:       libwbxml2 = %{version}
 Requires:       pkgconfig(expat)
@@ -59,13 +60,9 @@ mkdir build
 pushd build
 CFLAGS="%{optflags}" \
 CXXFLAGS="%{optflags}" \
-cmake \
+%cmake \
         -DCMAKE_BUILD_TYPE=None \
-        -DCMAKE_INSTALL_PREFIX=%{_prefix} \
         -DENABLE_INSTALL_DOC:BOOL=OFF \
-%if %{_lib} == lib64
-        -DLIB_SUFFIX=64 \
-%endif
          %{_builddir}/libwbxml-%{version}
 make %{?_smp_mflags} VERBOSE=1
 popd
@@ -81,10 +78,10 @@ popd
 
 %files
 %defattr(-, root, root)
-%doc COPYING
+%license COPYING
 %{_libdir}/libwbxml2.so.1*
 
-%files -n libwbxml2-devel
+%files devel
 %defattr(-,root,root)
 %{_libdir}/pkgconfig/libwbxml2.pc
 %{_libdir}/libwbxml2.so
