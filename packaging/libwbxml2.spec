@@ -88,6 +88,7 @@ popd
 %{_libdir}/libwbxml2.so
 %{_includedir}/libwbxml-1.0/wbxml
 %{_datadir}/cmake/Modules/FindLibWbxml2.cmake
+%{_includedir}/wbxml_config.h
 
 %files -n wbxml2-tools
 %defattr(-,root,root)
