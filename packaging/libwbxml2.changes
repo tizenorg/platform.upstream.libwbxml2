@@ -1,3 +1,6 @@
+* Fri Jun 14 2013 Anas Nashif <anas.nashif@intel.com> submit/tizen/20130614.130527@4a59bdf
+- Fixed package groups, added changes from tizen 2.1
+
 * Fri Jun 14 2013 Baptiste DURAND <baptiste.durand@eurogiciel.fr> accepted/tizen/20130520.100028@66e4b1d
 - Add wbxml_tree_from_xml_with_lang function
 
