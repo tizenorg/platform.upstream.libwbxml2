@@ -25,7 +25,7 @@ has been defined by the Wap Forum.
 %package -n wbxml2-tools
 License:        GPL-2.0+
 Summary:        Tools for libwbxml2
-Group:          Base/Tools
+Group:          System/Utilities
 Requires:       pkgconfig(libxml-2.0)
 Requires:       %{name} = %{version}
 
@@ -40,7 +40,7 @@ has been defined by the Wap Forum.
 %package devel
 License:        LGPL-2.1+
 Summary:        WBXML parser and compiler library
-Group:          Development/Libraries
+Group:          System/Development
 Requires:       glibc-devel
 Requires:       libwbxml2 = %{version}
 Requires:       pkgconfig(expat)
