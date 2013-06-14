@@ -1,3 +1,6 @@
+* Fri Jun 14 2013 Baptiste DURAND <baptiste.durand@eurogiciel.fr> accepted/tizen/20130520.100028@66e4b1d
+- Add wbxml_tree_from_xml_with_lang function
+
 * Mon Feb 11 2013 Anas Nashif <anas.nashif@intel.com> submit/trunk/20130212.033333@60398c2
 - Development package should requires libxml2-devel
 
