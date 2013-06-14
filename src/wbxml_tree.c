@@ -295,6 +295,119 @@ WBXML_DECLARE(WBXMLError) wbxml_tree_from_xml(WB_UTINY *xml, WB_ULONG xml_len, W
 }
 
 
+WBXML_DECLARE(WBXMLError) wbxml_tree_from_xml_with_lang(WB_UTINY *xml,
+                                              WB_ULONG xml_len,
+                                              WBXMLLanguage lang,
+                                              WBXMLTree **tree)
+{
+#if defined( HAVE_EXPAT )
+
+    const XML_Feature *feature_list = NULL;
+    XML_Parser         xml_parser   = NULL;
+    WBXMLError         ret          = WBXML_OK;
+    WB_BOOL            expat_utf16  = FALSE;
+    WBXMLTreeClbCtx    wbxml_tree_clb_ctx;
+
+    /* First Check if Expat is outputing UTF-16 strings */
+    feature_list = (const XML_Feature *)XML_GetFeatureList();
+
+    if ((feature_list != NULL) && (feature_list[0].value != sizeof(WB_TINY))) {
+#if !defined( HAVE_ICONV )
+        /* Ouch, can't convert from UTF-16 to UTF-8 */
+        return WBXML_ERROR_XMLPARSER_OUTPUT_UTF16;
+#else
+        /* Expat returns UTF-16 encoded strings in its callbacks */
+        expat_utf16 = TRUE;
+#endif /* !HAVE_ICONV */
+    }
+
+    if (tree != NULL)
+        *tree = NULL;
+
+    /* Create Expat XML Parser */
+    if ((xml_parser = XML_ParserCreateNS(NULL, WBXML_NAMESPACE_SEPARATOR)) == NULL)
+        return WBXML_ERROR_NOT_ENOUGH_MEMORY;
+
+    /* Init context */
+    wbxml_tree_clb_ctx.current = NULL;
+    wbxml_tree_clb_ctx.error = WBXML_OK;
+    wbxml_tree_clb_ctx.skip_lvl = 0;
+    wbxml_tree_clb_ctx.skip_start = 0;
+    wbxml_tree_clb_ctx.xml_parser = xml_parser;
+    wbxml_tree_clb_ctx.input_buff = xml;
+    wbxml_tree_clb_ctx.expat_utf16 = expat_utf16;
+
+    /* Create WBXML Tree */
+    if ((wbxml_tree_clb_ctx.tree = wbxml_tree_create(lang, WBXML_CHARSET_UNKNOWN)) == NULL) {
+        XML_ParserFree(xml_parser);
+        WBXML_ERROR((WBXML_PARSER, "Can't create WBXML Tree"));
+        return WBXML_ERROR_NOT_ENOUGH_MEMORY;
+    }
+
+    /* Set Handlers Callbacks */
+    XML_SetXmlDeclHandler(xml_parser, wbxml_tree_clb_xml_decl);
+
+    if (lang == WBXML_LANG_UNKNOWN) {
+    	XML_SetStartDoctypeDeclHandler(xml_parser, wbxml_tree_clb_xml_doctype_decl);
+    }
+
+    XML_SetElementHandler(xml_parser, wbxml_tree_clb_xml_start_element, wbxml_tree_clb_xml_end_element);
+    XML_SetCdataSectionHandler(xml_parser, wbxml_tree_clb_xml_start_cdata, wbxml_tree_clb_xml_end_cdata);
+    XML_SetProcessingInstructionHandler(xml_parser , wbxml_tree_clb_xml_pi);
+    XML_SetCharacterDataHandler(xml_parser, wbxml_tree_clb_xml_characters);
+    XML_SetUserData(xml_parser, (void*)&wbxml_tree_clb_ctx);
+
+    /* Parse the XML Document to WBXML Tree */
+    if (XML_Parse(xml_parser, (WB_TINY*) xml, xml_len, TRUE) == 0)
+    {
+        WBXML_ERROR((WBXML_CONV, "xml2wbxml conversion failed - expat error %i\n"
+            "\tdescription: %s\n"
+            "\tline: %i\n"
+            "\tcolumn: %i\n"
+            "\tbyte index: %i\n"
+            "\ttotal bytes: %i\n%s",
+            XML_GetErrorCode(xml_parser),
+            XML_ErrorString(XML_GetErrorCode(xml_parser)),
+            XML_GetCurrentLineNumber(xml_parser),
+            XML_GetCurrentColumnNumber(xml_parser),
+            XML_GetCurrentByteIndex(xml_parser),
+            XML_GetCurrentByteCount(xml_parser), xml));
+
+        wbxml_tree_destroy(wbxml_tree_clb_ctx.tree);
+
+        ret = WBXML_ERROR_XML_PARSING_FAILED;
+    }
+    else {
+        if ((ret = wbxml_tree_clb_ctx.error) != WBXML_OK)
+        {
+            WBXML_ERROR((WBXML_CONV, "xml2wbxml conversion failed - context error %i", ret));
+            wbxml_tree_destroy(wbxml_tree_clb_ctx.tree);
+        }
+        else
+            *tree = wbxml_tree_clb_ctx.tree;
+    }
+
+    /* Clean-up */
+    XML_ParserFree(xml_parser);
+
+    return ret;
+
+#else /* HAVE_EXPAT */
+
+#if defined( HAVE_LIBXML )
+
+    /** @todo Use LibXML2 SAX interface ! */
+    return WBXML_ERROR_NO_XMLPARSER;
+
+#else /* HAVE_LIBXML */
+
+    /** @note You can add here another XML Parser support */
+    return WBXML_ERROR_NO_XMLPARSER;
+
+#endif /* HAVE_LIBXML */
+
+#endif /* HAVE_EXPAT */
+}
 WBXML_DECLARE(WBXMLError) wbxml_tree_to_xml(WBXMLTree *tree,
                                             WB_UTINY **xml,
                                             WB_ULONG  *xml_len,

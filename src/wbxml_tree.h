@@ -187,6 +187,19 @@ WBXML_DECLARE(WBXMLError) wbxml_tree_from_xml(WB_UTINY *xml,
                                               WBXMLTree **tree);
 
 /**
+ * @brief Parse an XML document with given language, using internal callbacks (in wbxml_tree_clb_xml.c), and construct a WBXML Tree
+ * @param xml     [in]  The XML document to parse
+ * @param xml_len [in]  Length of the XML document
+ * @param tree    [out] The resulting WBXML Tree
+ * @result Return WBXML_OK if no error, an error code otherwise
+ * @note Needs 'HAVE_EXPAT' compile flag. If lang == WBXML_VERSION_UNKNOWN, then this function is same as wbxml_tree_from_xml
+ */
+WBXML_DECLARE(WBXMLError) wbxml_tree_from_xml_with_lang(WB_UTINY *xml,
+                                              WB_ULONG xml_len,
+                                              WBXMLLanguage lang,
+                                              WBXMLTree **tree);
+
+/**
  * @brief Convert a WBXML Tree to an XML document
  * @param tree    [in]  The WBXML Tree to convert
  * @param xml     [out] The resulting XML document
