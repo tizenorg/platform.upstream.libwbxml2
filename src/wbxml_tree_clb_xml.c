@@ -43,6 +43,9 @@
 #include "wbxml_charset.h"
 #include "wbxml_base64.h"
 
+#include "assert.h"
+#define WBXML_NAMESPACE_SEPARATOR ':'
+
 /************************************
  *  Public Functions
  */
@@ -114,6 +117,7 @@ void wbxml_tree_clb_xml_start_element(void           *ctx,
 {
     WBXMLTreeClbCtx *tree_ctx = (WBXMLTreeClbCtx *) ctx;
     const WBXMLLangEntry *lang_table = NULL;
+    enum XML_Status status = XML_STATUS_OK;
 
     WBXML_DEBUG((WBXML_PARSER, "Expat element start callback ('%s')", localName));
 
@@ -122,8 +126,9 @@ void wbxml_tree_clb_xml_start_element(void           *ctx,
     }
 
     /* Check for Error */
-    if (tree_ctx->error != WBXML_OK)
-        return;
+    if (tree_ctx->error != WBXML_OK) {
+    	goto error_case;
+    }
 
     /* Are we skipping a whole node ? */
     if (tree_ctx->skip_lvl > 0) {
@@ -134,16 +139,26 @@ void wbxml_tree_clb_xml_start_element(void           *ctx,
     if (tree_ctx->current == NULL) {
         /* This is the Root Element */
         if (tree_ctx->tree->lang == NULL) {
+        	/* get root element */
+            const WB_UTINY *root_element_name = NULL;
+            const WB_UTINY* sep = (WB_UTINY *)strrchr((const WB_TINY *) localName, WBXML_NAMESPACE_SEPARATOR);
+            if (sep != NULL) {
+                root_element_name = sep+1;
+            }
+            else {
+            	root_element_name = localName;
+            }
+
             /* Language Table not already found: Search again */
             lang_table = wbxml_tables_search_table(wbxml_tables_get_main(), 
                                                    NULL, 
                                                    NULL, 
-                                                   (const WB_UTINY *) localName);
+                                                   (const WB_UTINY *) root_element_name);
         
             if (lang_table == NULL) {
                 /* Damn, this is an unknown language for us... */
                 tree_ctx->error = WBXML_ERROR_UNKNOWN_XML_LANGUAGE;
-                return;
+                goto error_case;
             }
             else {
                 /* Well, we hope this was the Language we are searching for.. let's try with it :| */
@@ -182,7 +197,14 @@ void wbxml_tree_clb_xml_start_element(void           *ctx,
 
     if (tree_ctx->current == NULL) {
         tree_ctx->error = WBXML_ERROR_NOT_ENOUGH_MEMORY;
+        goto error_case;
     }
+
+    return;
+
+error_case:
+	status = XML_StopParser(tree_ctx->xml_parser, 0);
+	assert(status == XML_STATUS_OK);
 }
 
 
