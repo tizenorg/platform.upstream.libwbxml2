@@ -6,6 +6,7 @@ Summary:        WBXML parser and compiler library
 Url:            http://libwbxml.opensync.org/
 Group:          System/Libraries
 Source:         libwbxml-%{version}.tar.bz2
+Source1001: 	libwbxml2.manifest
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(expat)
@@ -55,6 +56,7 @@ has been defined by the Wap Forum.
 
 %prep
 %setup -q -n libwbxml-%{version}
+cp %{SOURCE1001} .
 
 %build
 mkdir build
@@ -78,11 +80,13 @@ popd
 %postun -p /sbin/ldconfig
 
 %files
+%manifest %{name}.manifest
 %defattr(-, root, root)
 %license COPYING
 %{_libdir}/libwbxml2.so.1*
 
 %files devel
+%manifest %{name}.manifest
 %defattr(-,root,root)
 %{_libdir}/pkgconfig/libwbxml2.pc
 %{_libdir}/libwbxml2.so
@@ -91,6 +95,7 @@ popd
 %{_includedir}/wbxml_config.h
 
 %files -n wbxml2-tools
+%manifest %{name}.manifest
 %defattr(-,root,root)
 %{_bindir}/wbxml2xml
 %{_bindir}/xml2wbxml
