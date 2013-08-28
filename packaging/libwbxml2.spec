@@ -45,6 +45,7 @@ Group:          System/Development
 Requires:       glibc-devel
 Requires:       libwbxml2 = %{version}
 Requires:       pkgconfig(expat)
+Requires:       pkgconfig(libxml-2.0)
 
 %description devel
 wbxml2 is a library that includes a WBXML parser and a WBXML compiler.
