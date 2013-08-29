@@ -1,3 +1,7 @@
+* Wed Aug 28 2013 Anas Nashif <anas.nashif@intel.com> accepted/tizen/20130710.215644@4ddd4e3
+- devel package need libxml2-devel
+- resetting manifest requested domain to floor
+
 * Fri Jun 14 2013 Anas Nashif <anas.nashif@intel.com> submit/tizen/20130614.130527@4a59bdf
 - Fixed package groups, added changes from tizen 2.1
 
